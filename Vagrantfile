@@ -1,35 +1,38 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require_relative 'config'
+Dir[ File.expand_path('../config/*.rb', __FILE__) ].each { |file| require file }
+
 require 'json'
 
 VAGRANTFILE_API_VERSION = '2'
 BASE_BOX = 'chef/centos-6.5'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  if Vagrant.has_plugin?('vagrant-cachier')
+    config.cache.scope = :box
+  end
+
   config.vm.define :chef_server do |chef_server|
     chef_server.vm.box = BASE_BOX
     chef_server.vm.provider :virtualbox do |vb|
-      vb.name = 'chefserver'
-      vb.gui = false
-      vb.customize ['modifyvm', :id, '--memory', '512']
+      vb.name = LocalConfig::Attr[:vb_name] || 'chefserver'
+      vb.gui = LocalConfig::Attr[:vb_gui] || false
+      vb.customize ['modifyvm', :id, '--memory', LocalConfig::Attr[:vb_memmory] || '256']
     end
-    chef_server.vm.hostname = 'chefserver'
-    chef_server.vm.network 'private_network', ip: '192.168.33.10'
-    chef_server.vm.network 'forwarded_port', id: 'ssh', guest: 22, host: 2200
+    chef_server.vm.hostname = LocalConfig::Attr[:hostname] || 'chefserver'
+    chef_server.vm.network 'private_network', ip: LocalConfig::Attr[:ip] || '192.168.33.10'
+    chef_server.vm.network 'forwarded_port', id: 'ssh', guest: 22, host: LocalConfig::Attr[:ssh_host_port] || 2200
 
     chef_server.omnibus.chef_version = :latest
 
     chef_server.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path    = CHEF_CONFIG[:cookbooks_path]
-      chef.data_bags_path    = CHEF_CONFIG[:data_bags_path]
-      chef.roles_path        = CHEF_CONFIG[:roles_path]
-      chef.environments_path = CHEF_CONFIG[:environments_path]
+      chef.cookbooks_path    = ChefConfig::Attr[:cookbooks_path]
+      chef.data_bags_path    = ChefConfig::Attr[:data_bags_path]
+      chef.roles_path        = ChefConfig::Attr[:roles_path]
+      chef.environments_path = ChefConfig::Attr[:environments_path]
 
-      chef_server_json = JSON.parse(IO.read(File.join(CHEF_CONFIG[:nodes_path], 'chef_server.json')))
-      chef.run_list = chef_server_json.delete('run_list')
-      chef.json = chef_server_json
+      chef.add_recipe 'chef-server'
     end
   end
 

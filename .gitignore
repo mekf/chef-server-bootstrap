@@ -1,3 +1,6 @@
-tmp/
+.chef/*.pem
+.chef/knife.rb
 .vagrant/
+config/local.rb
+tmp/
 test.rb

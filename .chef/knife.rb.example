@@ -1,0 +1,16 @@
+Dir[ File.expand_path('../../config/*.rb', __FILE__) ].each { |file| require file }
+
+log_level                :info
+log_location             STDOUT
+chef_server_url          "https://#{LocalConfig::Attr[:ip]}" || 'https://192.168.33.10'
+node_name                'admin'
+client_key               "#{ROOT_DIR}/.chef/admin.pem"
+validation_client_name   'chef-validator'
+validation_key           "#{ROOT_DIR}/.chef/chef-validator.pem"
+syntax_check_cache_path  "#{ROOT_DIR}/.chef/syntax_check_cache"
+
+cookbook_path    ChefConfig::Attr[:cookbooks_path]
+environment_path ChefConfig::Attr[:data_bags_path]
+node_path        ChefConfig::Attr[:nodes_path]
+role_path        ChefConfig::Attr[:roles_path]
+data_bag_path    ChefConfig::Attr[:environments_path]
