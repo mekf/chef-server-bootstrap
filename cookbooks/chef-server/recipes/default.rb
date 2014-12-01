@@ -96,6 +96,7 @@ end
 execute 'reconfigure-chef-server' do
   command 'chef-server-ctl reconfigure'
   action :nothing
+  notifies :run, 'execute[copy_pem_files_to_vagrant_dot_chef_dir]'
 end
 
 ruby_block 'ensure node can resolve API FQDN' do
@@ -106,4 +107,9 @@ ruby_block 'ensure node can resolve API FQDN' do
     fe.write_file
   end
   not_if { Resolv.getaddress(node['chef-server']['api_fqdn']) rescue false } # host resolves
+end
+
+execute 'copy_pem_files_to_vagrant_dot_chef_dir' do
+  command 'sudo cp -f /etc/chef-server/*.pem /vagrant/.chef/'
+  action :nothing
 end
