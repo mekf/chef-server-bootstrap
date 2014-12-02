@@ -6,7 +6,7 @@ Dir[ File.expand_path('../config/*.rb', __FILE__) ].each { |file| require file }
 require 'json'
 
 VAGRANTFILE_API_VERSION = '2'
-BASE_BOX = 'chef/centos-6.5'
+BASE_BOX = 'opscode-centos-6.5'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if Vagrant.has_plugin?('vagrant-cachier')
