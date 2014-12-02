@@ -1,4 +1,4 @@
-Dir[ File.expand_path('../../config/*.rb', __FILE__) ].each { |file| require file }
+require File.expand_path('../../config/init.rb', __FILE__)
 
 log_level                :info
 log_location             STDOUT

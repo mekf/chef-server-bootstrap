@@ -1,8 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Dir[ File.expand_path('../config/*.rb', __FILE__) ].each { |file| require file }
-
+require File.expand_path('../config/init.rb', __FILE__)
 require 'json'
 
 VAGRANTFILE_API_VERSION = '2'
