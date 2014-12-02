@@ -28,7 +28,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef_server.vm.network 'private_network', ip: LocalConfig::Attr[:ip] || '192.168.33.10'
     chef_server.vm.network 'forwarded_port', id: 'ssh', guest: 22, host: LocalConfig::Attr[:ssh_host_port] || 2200
 
-    chef_server.omnibus.chef_version = :latest
+    if Vagrant.has_plugin?('vagrant-omnibus')
+      chef_server.omnibus.chef_version = :latest
+    else
+      chef_server.vm.provision :shell, inline: 'curl -L https://www.getchef.com/chef/install.sh | sudo bash'
+    end
 
     chef_server.vm.provision :chef_solo do |chef|
       chef.cookbooks_path    = ChefConfig::Attr[:cookbooks_path]
