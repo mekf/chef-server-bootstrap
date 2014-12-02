@@ -13,6 +13,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.cache.scope = :box
   end
 
+  if Vagrant.has_plugin?('vagrant-vbguest')
+    config.vbguest.auto_update = false
+  end
+
   config.vm.define :chef_server do |chef_server|
     chef_server.vm.box = BASE_BOX
     chef_server.vm.provider :virtualbox do |vb|
