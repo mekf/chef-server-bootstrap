@@ -12,9 +12,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.cache.scope = :box
   end
 
-  if Vagrant.has_plugin?('vagrant-vbguest')
-    config.vbguest.auto_update = false
-  end
+  # disable auto update on first run. need to update kernel first
+  # if Vagrant.has_plugin?('vagrant-vbguest')
+  #   config.vbguest.no_install = true
+  # end
 
   config.vm.define :chef_server do |chef_server|
     chef_server.vm.box = BASE_BOX
@@ -23,24 +24,36 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.gui = LocalConfig::Attr[:vb_gui] || false
       vb.customize ['modifyvm', :id, '--memory', LocalConfig::Attr[:vb_memmory] || '256']
     end
+
     chef_server.vm.hostname = LocalConfig::Attr[:hostname] || 'chefserver'
+
     chef_server.vm.network 'private_network', ip: LocalConfig::Attr[:ip] || '192.168.33.10'
     chef_server.vm.network 'forwarded_port', id: 'ssh', guest: 22, host: LocalConfig::Attr[:ssh_host_port] || 2200
 
-    if Vagrant.has_plugin?('vagrant-omnibus')
-      chef_server.omnibus.chef_version = :latest
-    else
-      chef_server.vm.provision :shell, inline: 'curl -L https://www.getchef.com/chef/install.sh | sudo bash'
+    # if Vagrant.has_plugin?('vagrant-omnibus')
+    #   chef_server.omnibus.chef_version = :latest
+    # else
+    #   chef_server.vm.provision :shell, inline: 'curl -L https://www.getchef.com/chef/install.sh | sudo bash'
+    # end
+
+    if Vagrant.has_plugin?('vagrant-vbguest')
+      update_kernel = <<-SCRIPT
+      sudo yum -y install epel-release
+      sudo yum makecache
+      sudo yum -y update kernel && sudo yum -y install kernel-devel
+      SCRIPT
+      chef_server.vm.provision :shell, inline: update_kernel
+      # system 'vagrant vbguest --do '
     end
 
-    chef_server.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path    = ChefConfig::Attr[:cookbooks_path]
-      chef.data_bags_path    = ChefConfig::Attr[:data_bags_path]
-      chef.roles_path        = ChefConfig::Attr[:roles_path]
-      chef.environments_path = ChefConfig::Attr[:environments_path]
+    # chef_server.vm.provision :chef_solo do |chef|
+    #   chef.cookbooks_path    = ChefConfig::Attr[:cookbooks_path]
+    #   chef.data_bags_path    = ChefConfig::Attr[:data_bags_path]
+    #   chef.roles_path        = ChefConfig::Attr[:roles_path]
+    #   chef.environments_path = ChefConfig::Attr[:environments_path]
 
-      chef.add_recipe 'chef-server'
-    end
+    #   chef.add_recipe 'chef-server'
+    # end
   end
 
   # Disable automatic box update checking. If you disable this, then
