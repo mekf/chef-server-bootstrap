@@ -18,4 +18,4 @@
 - The script still works without any of them. But they will make working Vagrant a bit easier
 - [vagrant-cachier](https://github.com/fgrehm/vagrant-cachier)
 - [vagrant-vbox-snapshot](https://github.com/dergachev/vagrant-vbox-snapshot)
-- It's not recommended to use [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest). This plugin will automatically try to upgrade VirtualBox Guest Additions came installed with the vagrant base box. Sometimes it will break the installation because of a backward incompatibility change for mounting shared folders introduced at one point.
+- [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest) works great most of the time however it's incompatible with base centos-6.5 [[issue](https://github.com/dotless-de/vagrant-vbguest/issues/141)] therefore it's disabled in this script. The work around involves `vagrant ssh` into the machine, update the kernel `sudo yum -y update kernel`, do a full `vagrant halt`, change `config.vbguest.no_install = false` before `vagrant up` again.

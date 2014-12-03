@@ -12,21 +12,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.cache.scope = :box
   end
 
+  # disable Guest Addition auto update because it's incompatiable with centos-6.5
   if Vagrant.has_plugin?('vagrant-vbguest')
-    config.vbguest.auto_update = false
+    config.vbguest.no_install = true
   end
 
   config.vm.define :chef_server do |chef_server|
     chef_server.vm.box = BASE_BOX
+    chef_server.vm.hostname = LocalConfig::Attr[:hostname] || 'chefserver'
+
     chef_server.vm.provider :virtualbox do |vb|
       vb.name = LocalConfig::Attr[:vb_name] || 'chefserver'
       vb.gui = LocalConfig::Attr[:vb_gui] || false
       vb.customize ['modifyvm', :id, '--memory', LocalConfig::Attr[:vb_memmory] || '256']
     end
-    chef_server.vm.hostname = LocalConfig::Attr[:hostname] || 'chefserver'
+
     chef_server.vm.network 'private_network', ip: LocalConfig::Attr[:ip] || '192.168.33.10'
     chef_server.vm.network 'forwarded_port', id: 'ssh', guest: 22, host: LocalConfig::Attr[:ssh_host_port] || 2200
 
+    # install chef-client
     if Vagrant.has_plugin?('vagrant-omnibus')
       chef_server.omnibus.chef_version = :latest
     else
