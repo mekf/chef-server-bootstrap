@@ -5,7 +5,6 @@ require File.expand_path('../config/init.rb', __FILE__)
 require 'json'
 
 VAGRANTFILE_API_VERSION = '2'
-BASE_BOX = 'opscode-centos-6.5'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if Vagrant.has_plugin?('vagrant-cachier')
@@ -18,12 +17,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define :chef_server do |chef_server|
-    chef_server.vm.box = BASE_BOX
+    chef_server.vm.box      = 'opscode-centos-6.5'
+    chef_server.vm.box_url  = 'https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.5_chef-provisionerless.box'
     chef_server.vm.hostname = LocalConfig::Attr[:hostname] || 'chefserver'
 
     chef_server.vm.provider :virtualbox do |vb|
       vb.name = LocalConfig::Attr[:vb_name] || 'chefserver'
-      vb.gui = LocalConfig::Attr[:vb_gui] || false
+      vb.gui  = LocalConfig::Attr[:vb_gui] || false
       vb.customize ['modifyvm', :id, '--memory', LocalConfig::Attr[:vb_memmory] || '256']
     end
 
