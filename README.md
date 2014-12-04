@@ -7,9 +7,8 @@
 ### How to use it ###
 - Clone this repo
 - Install [Vagrant](https://www.vagrantup.com/), and [Virtual Box](https://www.virtualbox.org/)
-- From the terminal execute `vagrant box add opscode-centos-6.5 https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.5_chef-provisionerless.box` (this image can also be reused for [test-kitchen](https://github.com/test-kitchen/test-kitchen))
-- Copy `config/local.rb.example` to `config/local.rb` | You don't need to change anything if you are not planning to override the default settings.
-- From the terminal execute `vagrant up`
+- `cp config/local.rb.example config/local.rb` | You don't need to change anything if you are not planning to override the default settings.
+- From the terminal `vagrant up`
 - Add '192.168.33.10 chefserver' or the overridden LocalConfig::Attr[:ip] to your hosts file
 - Add other virtual machines to the same Host-only network if you want them to work with each other.
 - Once the machine finishes installing, go to https://chefserver (or https://192.168.33.10) to verify that the server is working. There will be a warning the first time you do this because there is no SSL certificate on this server. This is normal, just add an exception.

@@ -7,14 +7,10 @@ require 'json'
 VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  if Vagrant.has_plugin?('vagrant-cachier')
-    config.cache.scope = :box
-  end
+  config.cache.scope = :box if Vagrant.has_plugin?('vagrant-cachier')
 
   # disable Guest Addition auto update because it's incompatiable with centos-6.5
-  if Vagrant.has_plugin?('vagrant-vbguest')
-    config.vbguest.no_install = true
-  end
+  config.vbguest.no_install = true if Vagrant.has_plugin?('vagrant-vbguest')
 
   config.vm.define :chef_server do |chef_server|
     chef_server.vm.box      = 'opscode-centos-6.5'
