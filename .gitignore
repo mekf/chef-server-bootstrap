@@ -1,4 +1,5 @@
 .chef/*.pem
+.chef/trusted_certs
 .chef/knife.rb
 .vagrant/
 config/local.rb

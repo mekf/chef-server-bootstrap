@@ -2,7 +2,7 @@ module LocalConfig
   Attr = {
     # hostname: 'chefserver', 
     # vb_name: 'chefserver',
-    # vb_gui: false
+    # vb_gui: false,
     # vb_memmory: '512',
     # ip: '192.168.33.10',
     # ssh_host_port: '2200'

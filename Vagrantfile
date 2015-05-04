@@ -36,10 +36,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chef_server.vm.provision :chef_solo do |chef|
       chef.cookbooks_path    = ChefConfig::Attr[:cookbooks_path]
       chef.data_bags_path    = ChefConfig::Attr[:data_bags_path]
-      chef.roles_path        = ChefConfig::Attr[:roles_path]
-      chef.environments_path = ChefConfig::Attr[:environments_path]
 
-      chef.add_recipe 'chef-server'
+      chef.add_recipe 'chef-server::vagrant_bootstrap'
     end
   end
 
